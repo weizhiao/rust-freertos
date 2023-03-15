@@ -55,6 +55,9 @@ cfg_if::cfg_if! {
     ))] {
         #[path = "gcc.rs"]
         mod real_imp;
+    } else if #[cfg(target_os = "freertos")] {
+        #[path = "freertos.rs"]
+        mod real_imp;
     } else {
         // Targets that don't support unwinding.
         // - family=wasm

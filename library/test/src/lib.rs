@@ -21,6 +21,7 @@
 #![feature(staged_api)]
 #![feature(process_exitcode_internals)]
 #![feature(panic_can_unwind)]
+#![feature(restricted_std)]
 #![feature(test)]
 
 // Public reexports

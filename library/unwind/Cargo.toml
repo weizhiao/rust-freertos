@@ -19,6 +19,10 @@ libc = { version = "0.2.79", features = ['rustc-dep-of-std'], default-features =
 compiler_builtins = "0.1.0"
 cfg-if = "1.0"
 
+[target.riscv64gc-sipeed-freertos.dependencies]
+gimli = { version = "0.26.1", default-features = false, features = ["read-core"] }
+alloc = {path = "../alloc"}
+
 [build-dependencies]
 cc = "1.0.76"
 
@@ -32,3 +36,12 @@ llvm-libunwind = []
 # If crt-static is enabled, static link to `libunwind.a` provided by system
 # If crt-static is disabled, dynamic link to `libunwind.so` provided by system
 system-llvm-libunwind = []
+
+fde-phdr = []
+fde-phdr-dl = ["fde-phdr"]
+fde-static = []
+fde-gnu-eh-frame-hdr = []
+dwarf-expr = []
+hide-trace = []
+
+default =["dwarf-expr", "hide-trace", "fde-static"]

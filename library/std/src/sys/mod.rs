@@ -40,6 +40,9 @@ cfg_if::cfg_if! {
     } else if #[cfg(target_os = "wasi")] {
         mod wasi;
         pub use self::wasi::*;
+    } else if #[cfg(target_os = "freertos")]{
+        mod freertos;
+        pub use self::freertos::*;
     } else if #[cfg(target_family = "wasm")] {
         mod wasm;
         pub use self::wasm::*;
