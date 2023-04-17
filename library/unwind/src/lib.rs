@@ -1,6 +1,7 @@
 #![no_std]
 #![unstable(feature = "panic_unwind", issue = "32837")]
 #![feature(link_cfg)]
+#![feature(naked_functions)]
 #![feature(staged_api)]
 #![feature(c_unwind)]
 #![feature(cfg_target_abi)]
@@ -24,6 +25,11 @@ cfg_if::cfg_if! {
     ))] {
         mod libunwind;
         pub use libunwind::*;
+    } else if #[cfg(
+        target_os = "freertos"
+    )] {
+        mod unwinding;
+        pub use unwinding::abi::*;
     } else {
         // no unwinder on the system!
         // - wasm32 (not emscripten, which is "unix" family)
@@ -125,5 +131,9 @@ extern "C" {}
 extern "C" {}
 
 #[cfg(target_os = "haiku")]
+#[link(name = "gcc_s")]
+extern "C" {}
+
+#[cfg(target_os = "nto")]
 #[link(name = "gcc_s")]
 extern "C" {}
