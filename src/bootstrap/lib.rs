@@ -215,6 +215,7 @@ const EXTRA_CHECK_CFGS: &[(Option<Mode>, &'static str, Option<&[&'static str]>)]
     /* Extra values not defined in the built-in targets yet, but used in std */
     (Some(Mode::Std), "target_env", Some(&["libnx"])),
     (Some(Mode::Std), "target_os", Some(&["watchos"])),
+    (Some(Mode::Std), "target_os", Some(&["freertos"])),
     (
         Some(Mode::Std),
         "target_arch",
