@@ -29,6 +29,7 @@ fn main() {
         || target.contains("wasm64")
         || target.contains("asmjs")
         || target.contains("espidf")
+        || target.contains("freertos")
         || target.contains("solid")
         || target.contains("nintendo-3ds")
     {

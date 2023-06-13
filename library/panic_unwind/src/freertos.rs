@@ -10,49 +10,6 @@ use uw::{UnwindException, UnwindReasonCode};
 // this copy and some other copy (which needs to be treated as foreign exception).
 static CANARY: u8 = 0;
 
-struct RustPanic(Box<dyn Any + Send>, DropGuard);
-
-struct DropGuard;
-
-#[repr(C)]
-struct ExceptionWithPayload {
-    exception: MaybeUninit<UnwindException>,
-    payload: RustPanic,
-}
-
-impl Drop for DropGuard {
-    fn drop(&mut self) {
-        // #[cfg(feature = "panic-handler")]
-        // {
-        //     drop_panic();
-        // }
-        core::intrinsics::abort();
-    }
-}
-
-pub unsafe trait ExceptionTrait {
-    const CLASS: [u8; 8];
-
-    fn wrap(this: Self) -> *mut UnwindException;
-    unsafe fn unwrap(ex: *mut UnwindException) -> Self;
-}
-
-unsafe impl ExceptionTrait for RustPanic {
-    const CLASS: [u8; 8] = *b"MOZ\0RUST";
-
-    fn wrap(this: Self) -> *mut UnwindException {
-        Box::into_raw(Box::new(ExceptionWithPayload {
-            exception: MaybeUninit::uninit(),
-            payload: this,
-        })) as *mut UnwindException
-    }
-
-    unsafe fn unwrap(ex: *mut UnwindException) -> Self {
-        let ex = unsafe { Box::from_raw(ex as *mut ExceptionWithPayload) };
-        ex.payload
-    }
-}
-
 #[repr(C)]
 struct Exception {
     _uwe: UnwindException,
@@ -71,19 +28,19 @@ pub unsafe fn panic(data: Box<dyn Any + Send>) -> u32 {
         }
     }
 
-    let exception = Box::new(Exception {
+    let mut exception = Box::new(Exception {
         _uwe: UnwindException {
             exception_class: rust_exception_class(),
-            exception_cleanup,
-            private: [0; uw::unwinder_private_data_size],
+            exception_cleanup:Some(exception_cleanup),
+            private_1: None,
+            private_2:0,
+            private_unused:[]
         },
         canary: &CANARY,
         cause: data,
     });
 
-    let exception_param = Box::into_raw(exception) as *mut UnwindException;
-    return uw::_Unwind_RaiseException(exception_param) as u32;
-    //eprintln!("start panic begin_panic");
+    return uw::_Unwind_RaiseException(&mut exception._uwe).0 as u32;
 }
 
 
@@ -95,14 +52,9 @@ pub unsafe fn cleanup(ptr: *mut u8) -> Box<dyn Any + Send> {
     }
 
     let exception = exception.cast::<Exception>();
-    // Just access the canary field, avoid accessing the entire `Exception` as
-    // it can be a foreign Rust exception.
+
     let canary = ptr::addr_of!((*exception).canary).read();
     if !ptr::eq(canary, &CANARY) {
-        // A foreign Rust exception, treat it slightly differently from other
-        // foreign exceptions, because call into `_Unwind_DeleteException` will
-        // call into `__rust_drop_panic` which produces a confusing
-        // "Rust panic must be rethrown" message.
         super::__rust_foreign_exception();
     }
 
