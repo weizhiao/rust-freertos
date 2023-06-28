@@ -6,9 +6,9 @@ use gimli::{Evaluation, EvaluationResult, Location, Value};
 
 use super::arch::*;
 use super::find_fde::{self, FDEFinder, FDESearchResult};
-use crate::unwinding::abi::PersonalityRoutine;
-use crate::unwinding::arch::*;
-use crate::unwinding::util::*;
+use crate::abi::PersonalityRoutine;
+use crate::arch::*;
+use crate::util::*;
 
 struct StoreOnStack;
 
@@ -123,6 +123,11 @@ impl Frame {
         _expr: Expression<StaticSlice>,
     ) -> Result<usize, gimli::Error> {
         Err(gimli::Error::UnsupportedEvaluation)
+    }
+
+    pub fn adjust_stack_for_args(&self, ctx: &mut Context) {
+        let size = self.row.saved_args_size();
+        ctx[Arch::SP] = ctx[Arch::SP].wrapping_add(size as usize);
     }
 
     pub fn unwind(&self, ctx: &Context) -> Result<Context, gimli::Error> {

@@ -1,5 +1,5 @@
 use super::FDESearchResult;
-use crate::unwinding::util::*;
+use crate::util::*;
 
 use core::mem;
 use core::slice;
@@ -19,11 +19,30 @@ pub fn get_finder() -> &'static PhdrFinder {
 
 impl super::FDEFinder for PhdrFinder {
     fn find_fde(&self, pc: usize) -> Option<FDESearchResult> {
+        #[cfg(feature = "fde-phdr-aux")]
+        if let Some(v) = search_aux_phdr(pc) {
+            return Some(v);
+        }
         #[cfg(feature = "fde-phdr-dl")]
         if let Some(v) = search_dl_phdr(pc) {
             return Some(v);
         }
         None
+    }
+}
+
+#[cfg(feature = "fde-phdr-aux")]
+fn search_aux_phdr(pc: usize) -> Option<FDESearchResult> {
+    use libc::{getauxval, AT_PHDR, AT_PHNUM, PT_PHDR};
+
+    unsafe {
+        let phdr = getauxval(AT_PHDR) as *const Elf_Phdr;
+        let phnum = getauxval(AT_PHNUM) as usize;
+        let phdrs = slice::from_raw_parts(phdr, phnum);
+        // With known address of PHDR, we can calculate the base address in reverse.
+        let base =
+            phdrs.as_ptr() as usize - phdrs.iter().find(|x| x.p_type == PT_PHDR)?.p_vaddr as usize;
+        search_phdr(phdrs, base, pc)
     }
 }
 

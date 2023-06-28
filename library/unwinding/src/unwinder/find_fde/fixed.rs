@@ -1,5 +1,5 @@
 use super::FDESearchResult;
-use crate::unwinding::util::*;
+use crate::util::*;
 
 use gimli::{BaseAddresses, EhFrame, NativeEndian, UnwindSection};
 
@@ -10,16 +10,16 @@ pub fn get_finder() -> &'static StaticFinder {
 }
 
 extern "C" {
-    static __text_code_start__: u8;
-    static __text_code_end__: u8;
+    static __executable_start: u8;
+    static __etext: u8;
     static __eh_frame: u8;
 }
 
 impl super::FDEFinder for StaticFinder {
     fn find_fde(&self, pc: usize) -> Option<FDESearchResult> {
         unsafe {
-            let text_start = &__text_code_start__ as *const u8 as usize;
-            let text_end = &__text_code_end__ as *const u8 as usize;
+            let text_start = &__executable_start as *const u8 as usize;
+            let text_end = &__etext as *const u8 as usize;
             if !(text_start..text_end).contains(&pc) {
                 return None;
             }

@@ -1,5 +1,5 @@
 use super::FDESearchResult;
-use crate::unwinding::util::*;
+use crate::util::*;
 
 use gimli::{BaseAddresses, EhFrame, EhFrameHdr, NativeEndian, UnwindSection};
 

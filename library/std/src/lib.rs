@@ -594,9 +594,19 @@ mod sys_common;
 
 pub mod alloc;
 
+cfg_if::cfg_if! {
+    if #[cfg(target_os="freertos")] {
+        #[path="panicking_freertos.rs"]
+        mod panicking;
+    }else{
 // Private support modules
-mod panicking;
+        #[path="panicking.rs"]
+        mod panicking;
+    }
+}
+
 mod personality;
+
 
 #[path = "../../backtrace/src/lib.rs"]
 #[allow(dead_code, unused_attributes, fuzzy_provenance_casts)]

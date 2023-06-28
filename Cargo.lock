@@ -5294,6 +5294,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "spin"
+version = "0.9.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6980e8d7511241f8acf4aebddbb1ff938df5eebe98691418c4468d0b72a96a67"
+
+[[package]]
 name = "spki"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5352,6 +5358,7 @@ dependencies = [
  "rustc-demangle",
  "std_detect",
  "unwind",
+ "unwinding",
  "wasi",
 ]
 
@@ -6087,6 +6094,18 @@ dependencies = [
  "core",
  "gimli",
  "libc 0.2.138 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "unwinding"
+version = "0.1.7"
+dependencies = [
+ "alloc",
+ "compiler_builtins",
+ "core",
+ "gimli",
+ "libc 0.2.138",
+ "spin",
 ]
 
 [[package]]

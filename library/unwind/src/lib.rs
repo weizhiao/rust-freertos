@@ -25,11 +25,6 @@ cfg_if::cfg_if! {
     ))] {
         mod libunwind;
         pub use libunwind::*;
-    } else if #[cfg(
-        target_os = "freertos"
-    )] {
-        mod unwinding;
-        pub use unwinding::abi::*;
     } else {
         // no unwinder on the system!
         // - wasm32 (not emscripten, which is "unix" family)
