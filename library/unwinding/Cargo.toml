@@ -12,12 +12,12 @@ alloc = { path = "../alloc" }
 compiler_builtins = "0.1.0"
 core = {path="../core"}
 gimli = { version = "0.26.1", default-features = false, features = ["read-core"] }
-libc = { path="/home/wei/桌面/libc", optional = true }
+libc = { path="/home/wei/桌面/libc"}
 spin = { version = "0.9", optional = true, default-features = false, features = ["mutex", "spin_mutex"] }
 
 [features]
 unwinder = []
-fde-phdr = ["libc"]
+fde-phdr = []
 fde-phdr-dl = ["fde-phdr"]
 fde-phdr-aux = ["fde-phdr"]
 fde-registry = []
@@ -28,7 +28,7 @@ dwarf-expr = []
 hide-trace = []
 personality = []
 personality-dummy = []
-print = ["libc"]
+print = []
 panicking = []
 panic = ["panicking"]
 panic-handler = ["print", "panic"]

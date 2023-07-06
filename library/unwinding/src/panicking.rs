@@ -1,4 +1,6 @@
 use core::mem::ManuallyDrop;
+extern crate libc;
+use alloc::string::String;
 
 use crate::abi::*;
 
@@ -39,6 +41,10 @@ pub fn catch_unwind<E: Exception, R, F: FnOnce() -> R>(f: F) -> Result<R, Option
 
     let data_ptr = &mut data as *mut _ as *mut u8;
     unsafe {
+        let str="r#try\n";
+        libc::write(1,str.as_ptr() as _, str.len());
+    }
+    unsafe {
         return if core::intrinsics::r#try(do_call::<F, R>, data_ptr, do_catch::<E>) == 0 {
             Ok(ManuallyDrop::into_inner(data.r))
         } else {
@@ -49,6 +55,10 @@ pub fn catch_unwind<E: Exception, R, F: FnOnce() -> R>(f: F) -> Result<R, Option
     #[inline]
     fn do_call<F: FnOnce() -> R, R>(data: *mut u8) {
         unsafe {
+            let str="do_call\n";
+            libc::write(1,str.as_ptr() as _, str.len());
+        }
+        unsafe {
             let data = &mut *(data as *mut Data<F, R, ()>);
             let f = ManuallyDrop::take(&mut data.f);
             data.r = ManuallyDrop::new(f());
@@ -57,6 +67,10 @@ pub fn catch_unwind<E: Exception, R, F: FnOnce() -> R>(f: F) -> Result<R, Option
 
     #[cold]
     fn do_catch<E: Exception>(data: *mut u8, exception: *mut u8) {
+        unsafe {
+            let str="do_catch\n";
+            libc::write(1,str.as_ptr() as _, str.len());
+        }
         unsafe {
             let data = &mut *(data as *mut ManuallyDrop<Option<E>>);
             let exception = exception as *mut UnwindException;
