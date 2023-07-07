@@ -1,4 +1,4 @@
-use crate::spec::{Cc, CodeModel, LinkerFlavor, Lld, PanicStrategy};
+use crate::spec::{Cc, CodeModel, LinkerFlavor, Lld};
 use crate::spec::{RelocModel, Target, TargetOptions};
 
 pub fn target() -> Target {
@@ -17,11 +17,8 @@ pub fn target() -> Target {
             cpu: "generic-rv64".into(),
             max_atomic_width: Some(64),
             features: "+m,+a,+f,+d,+c".into(),
-            panic_strategy: PanicStrategy::Abort,
             relocation_model: RelocModel::Static,
             code_model: Some(CodeModel::Medium),
-            emit_debug_gdb_scripts: false,
-            eh_frame_header: false,
             ..Default::default()
         },
     }
