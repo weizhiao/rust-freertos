@@ -389,7 +389,6 @@ pub use realstd::rt::panic_count;
 
 /// Invoke a closure, capturing the cause of an unwinding panic if one occurs.
 pub unsafe fn r#try<R, F: FnOnce() -> R>(f: F) -> Result<R, Box<dyn Any + Send>> {
-    let _ = core::writeln!(StderrPrinter,"catch");
     unwinding::panic::catch_unwind(f)
 }
 
@@ -419,7 +418,7 @@ pub fn begin_panic_handler(info: &PanicInfo<'_>) -> ! {
 
 fn do_panic(msg: Box<dyn Any + Send>) -> ! {
 
-    stack_trace();
+    //stack_trace();
     
     let code = unwinding::panic::begin_panic(Box::new(msg));
 

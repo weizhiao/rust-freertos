@@ -43,7 +43,7 @@ dlmalloc = { version = "0.2.3", features = ['rustc-dep-of-std'] }
 fortanix-sgx-abi = { version = "0.5.0", features = ['rustc-dep-of-std'] }
 
 [target.'cfg(target_os = "freertos")'.dependencies]
-unwinding={path="../unwinding",default-features = false,features=["unwinder", "fde-static", "personality", "dwarf-expr","panic"]}
+unwinding={path="../unwinding",default-features = false,features=["unwinder", "fde-static", "personality", "dwarf-expr","panic","hide-trace"]}
 
 [target.'cfg(target_os = "hermit")'.dependencies]
 hermit-abi = { version = "0.2.6", features = ['rustc-dep-of-std'] }
